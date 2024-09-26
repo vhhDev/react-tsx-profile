@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import logo from './logo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faShieldAlt, faUserCircle, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faShieldAlt, faUserCircle, faArrowRight, faCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 
 function App() {
+    const [avatar, setAvatar] = useState<string | null>(null);
+
     const fakeUserData = {
+        avatar: null,
         email: 'hh1203@gmail.com',
         uid: '308438329',
         status: {
@@ -14,13 +17,37 @@ function App() {
             isVerified: true, // Thay đổi giá trị này để kiểm tra trường hợp đã xác minh
         },
     };
+    const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setAvatar(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
     return (
         <div className='max-w-4xl mx-auto p-4 sm:p-6 bg-gray-100'>
             <div className='flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-50 shadow-md rounded-lg'>
                 <div className='flex items-center space-x-4'>
+                <label htmlFor="avatar-upload" className="cursor-pointer">
                     <div className='w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center'>
-                        <i className='fas fa-user text-2xl text-white'></i>
+
+                        {fakeUserData.avatar ? (
+                                    <img src={fakeUserData.avatar} alt="User Avatar" className="w-full h-full object-cover" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faUserCircle} className='text-white text-2xl' />
+                        )}
+                        <input
+                                type="file"
+                                id="avatar-upload"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                            />
                     </div>
+                </label>
                     <div>
                         <h1 className='text-xl font-semibold'>{fakeUserData.email}</h1>
                         <p className='text-gray-500'>UID: {fakeUserData.uid}</p>
